@@ -1,4 +1,4 @@
-package com.hse.lab4;
+package com.hse.lab4.engine;
 
 import java.util.Locale;
 import java.text.DecimalFormat;
@@ -51,12 +51,21 @@ public enum MoneyLevel {
     }
 
     /**
-     * Возвращает номер уровня (0-15).
+     * Возвращает номер уровня (1-15).
      * 
      * @return номер уровня
      */
     public int getLevelNumber() {
         return levelNumber;
+    }
+
+    /**
+     * Возвращает двузначный код уровня (00-15).
+     * 
+     * @return строка с двузначным кодом уровня
+     */
+    public String getLevelCode() {
+        return String.format("%02d", levelNumber);
     }
 
     /**
@@ -74,7 +83,19 @@ public enum MoneyLevel {
     }
 
     /**
-     * Возвращает массив всех уровней в убывающем порядке (от 3 000 000 к 500).
+     * Возвращает следующий уровень вознаграждения.
+     * 
+     * @return следующий уровень или null, если текущий уровень - LEVEL15 (максимум)
+     */
+    public MoneyLevel getNextLevel() {
+        if (levelNumber >= 15) {
+            return null;
+        }
+        return fromLevel(levelNumber + 1);
+    }
+
+    /**
+     * Возвращает массив всех уровней в убывающем порядке (от 3 000 000 к 0).
      * 
      * @return массив уровней в порядке убывания
      */
