@@ -146,4 +146,17 @@ public class TxtQuestionRepository implements IQuestionProvider {
         int randomIndex = random.nextInt(questionsForLevel.size());
         return questionsForLevel.get(randomIndex);
     }
+
+    /**
+     * Возвращает все загруженные вопросы.
+     *
+     * @return список всех вопросов
+     */
+    public List<Question> getAllQuestions() {
+        List<Question> allQuestions = new ArrayList<>();
+        for (List<Question> questions : questionsByLevel) {
+            allQuestions.addAll(questions);
+        }
+        return allQuestions;
+    }
 }
