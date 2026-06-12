@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.image.Image?>
@@ -14,8 +15,8 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
-   fx:controller="com.hse.lab4.PrimaryController">
+<BorderPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx/26"
+   xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hse.lab4.PrimaryController">
    <bottom>
       <VBox alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
@@ -74,8 +75,8 @@
       <VBox alignment="CENTER" maxHeight="400.0" maxWidth="140.0" minWidth="140.0" prefWidth="140.0"
          spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="btnHelpFiftyFifty" onAction="#handleFiftyFiftyClick"
-               prefWidth="120.0" text="50/50" />
+            <Button fx:id="btnHelpFiftyFifty" onAction="#handleFiftyFiftyClick" prefWidth="120.0"
+               text="50/50" />
             <Button fx:id="btnHelpFriend" prefWidth="120.0" text="Помощь зала" />
             <Button fx:id="btnHelpViewer" prefWidth="120.0" text="Звонок другу" />
             <Region prefHeight="20.0" />
@@ -101,4 +102,16 @@
          </padding>
       </StackPane>
    </center>
+   <top>
+      <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <buttons>
+            <Button fx:id="btnUseTxt" onAction="#handleUseTxtClick" text="Вопросы из файла" />
+            <Button fx:id="btnUseDb" onAction="#handleUseDBClick" text="Вопросы из БД" />
+            <Button fx:id="btnImport" onAction="#handleImportClick" text="Заполнить БД" />
+         </buttons>
+         <padding>
+            <Insets right="10.0" top="10.0" />
+         </padding>
+      </ButtonBar>
+   </top>
 </BorderPane>

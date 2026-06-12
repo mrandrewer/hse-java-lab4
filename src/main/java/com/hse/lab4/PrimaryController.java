@@ -1,7 +1,9 @@
 package com.hse.lab4;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -13,11 +15,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.ListView;
+
+import com.hse.lab4.data.DBQuestionRepository;
+import com.hse.lab4.data.IQuestionProvider;
 import com.hse.lab4.data.TxtQuestionRepository;
 import com.hse.lab4.engine.Game;
 import com.hse.lab4.engine.MoneyLevel;
@@ -99,10 +105,10 @@ public class PrimaryController implements Initializable {
         Platform.runLater(() -> {
             if (imgLogo != null && imagePane != null) {
                 imgLogo.fitWidthProperty().bind(imagePane.widthProperty());
-                this.initLevel();
-                this.initHelp();
-                this.initQuestion();
-                this.initGame();
+                this.initLevelUI();
+                this.initHelpUI();
+                this.initQuestionUI();
+                this.initDBGame();
             }
         });
     }
@@ -110,7 +116,7 @@ public class PrimaryController implements Initializable {
     /**
      * Инициализирует таблицу вознаграждений
      */
-    private void initLevel() {
+    private void initLevelUI() {
         if (lvMoney != null) {
             lvMoney.setItems(FXCollections.observableArrayList(MoneyLevel.descending()));
             lvMoney.setCellFactory(list -> new javafx.scene.control.ListCell<>() {
@@ -131,7 +137,7 @@ public class PrimaryController implements Initializable {
     /**
      * Инициализирует кнопки подсказок
      */
-    private void initHelp() {
+    private void initHelpUI() {
         btnHelpFiftyFifty.disableProperty().bind(help50Disabled);
         btnHelpFriend.disableProperty().bind(helpFriendDisabled);
         btnHelpViewer.disableProperty().bind(helpViewersDisabled);
@@ -140,7 +146,7 @@ public class PrimaryController implements Initializable {
     /**
      * Инициализирует вопрос и варианты ответов на экране.
      */
-    private void initQuestion() {
+    private void initQuestionUI() {
         lblQuestion.textProperty().bind(question);
         btnAnswer1.textProperty().bind(answer1);
         btnAnswer1.disableProperty().bind(answer1Disabled);
@@ -153,20 +159,9 @@ public class PrimaryController implements Initializable {
     }
 
     /**
-     * Инициализирует игру
-     */
-    private void initGame() {
-        var repository = new TxtQuestionRepository();
-        repository.load("Вопросы.txt");
-        this.game = new Game(repository);
-        this.game.newGame();
-        resetGame();
-    }
-
-    /**
      * Сбрасывает игру на начало
      */
-    private void resetGame() {
+    private void resetGameUI() {
         help50Disabled.set(false);
         helpFriendDisabled.set(false);
         helpViewersDisabled.set(false);
@@ -190,7 +185,7 @@ public class PrimaryController implements Initializable {
             answer4Disabled.set(false);
         }
         var level = game.getCurrentLevel();
-        selectMoney(level);
+        setCurrentLevel(level);
     }
 
     /**
@@ -198,7 +193,7 @@ public class PrimaryController implements Initializable {
      * 
      * @param level уровень вознаграждения для выбора
      */
-    private void selectMoney(MoneyLevel level) {
+    private void setCurrentLevel(MoneyLevel level) {
         if (lvMoney == null || level == null)
             return;
         Platform.runLater(() -> {
@@ -229,6 +224,99 @@ public class PrimaryController implements Initializable {
     }
 
     /**
+     * Создание репозитория вопросов из текстового файла
+     * 
+     * @return инициализированный репозиторий с вопросами
+     */
+    private TxtQuestionRepository createTxtRepository() {
+        var window = imagePane.getScene().getWindow();
+        if (window == null) {
+            return null;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        String workingDirPath = System.getProperty("user.dir");
+        File workingDirectory = new File(workingDirPath);
+        fileChooser.setInitialDirectory(workingDirectory);
+        fileChooser.setTitle("Выберите файл вопросов");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Text files", "*.txt"));
+        File selectedFile = fileChooser.showOpenDialog(window);
+        if (selectedFile == null) {
+            return null;
+        }
+        try {
+            TxtQuestionRepository repository = new TxtQuestionRepository();
+            repository.load(selectedFile.getAbsolutePath());
+            if (repository.getAllQuestions().isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Ошибка загрузки");
+                alert.setHeaderText("Не удалось прочитать файл воспросов.");
+                alert.showAndWait();
+                return null;
+            }
+            return repository;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка загрузки");
+            alert.setHeaderText("Не удалось прочитать файл воспросов.");
+            alert.showAndWait();
+            return null;
+        }
+    }
+
+    /**
+     * Создание репозитория вопросов из локальной БД
+     * 
+     * @return инициализированный репозиторий с вопросами
+     */
+    private DBQuestionRepository createDBRepository() {
+        try {
+            return new DBQuestionRepository();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка загрузки");
+            alert.setHeaderText("Не удалось инициализировать базу вопросов. Переазгрузите игру.");
+            alert.showAndWait();
+        }
+        return null;
+    }
+
+    /**
+     * Инициализирует игру
+     */
+    private void initGame(IQuestionProvider questionProvider) {
+        var repository = new TxtQuestionRepository();
+        repository.load("Вопросы.txt");
+        this.game = new Game(questionProvider);
+        this.game.newGame();
+        resetGameUI();
+    }
+
+    /**
+     * Инициализирует игру
+     */
+    private void initDBGame() {
+        var repository = createDBRepository();
+        if (repository != null) {
+            initGame(repository);
+        }
+    }
+
+    /**
+     * Инициализирует игру
+     */
+    private void initTxtGame() {
+        var repository = createTxtRepository();
+        if (repository == null) {
+            initDBGame();
+        }
+        initGame(repository);
+    }
+
+    /**
      * Обработка клика по кнопке ответа
      */
     @FXML
@@ -246,7 +334,7 @@ public class PrimaryController implements Initializable {
                 alert.setHeaderText("Вы выиграли, забирайте свои 3 миллиона рублей и начинайте сначала!");
                 alert.showAndWait();
                 game.newGame();
-                resetGame();
+                resetGameUI();
             }
         } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -254,7 +342,7 @@ public class PrimaryController implements Initializable {
             alert.setHeaderText("Вы - самое слабое звено, начинайте сначала!");
             alert.showAndWait();
             game.newGame();
-            resetGame();
+            resetGameUI();
         }
     }
 
@@ -262,7 +350,7 @@ public class PrimaryController implements Initializable {
      * Обработка клика по подсказке 50/50
      */
     @FXML
-    private void handleFiftyFiftyClick(ActionEvent event) {
+    private void handleFiftyFiftyClick() {
         if (game == null || game.getCurrentQuestion() == null) {
             return;
         }
@@ -276,5 +364,53 @@ public class PrimaryController implements Initializable {
             disableAnswerMapper[answer].set(true);
         }
         help50Disabled.set(true);
+    }
+
+    /**
+     * Загружает вопросы из файла и инициализирует игру
+     */
+    @FXML
+    private void handleUseTxtClick() {
+        initTxtGame();
+    }
+
+    /**
+     * Загружает вопросы из БД и инициализирует игру
+     */
+    @FXML
+    private void handleUseDBClick() {
+        initDBGame();
+    }
+
+    /**
+     * Импортирует вопросы из txt-файла в SQLite базу.
+     */
+    @FXML
+    private void handleImportClick() {
+        try {
+            var txtRepository = createTxtRepository();
+            if (txtRepository == null) {
+                return;
+            }
+            var dbQuestionRepository = createDBRepository();
+            if (dbQuestionRepository == null) {
+                return;
+            }
+
+            dbQuestionRepository.importQuestions(txtRepository.getAllQuestions());
+            initGame(dbQuestionRepository);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Импорт завершен");
+            alert.setHeaderText("Импорт завершен");
+            alert.showAndWait();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка импорта");
+            alert.setHeaderText(null);
+            alert.setContentText("Не удалось выполнить импорт вопросов");
+            alert.showAndWait();
+            System.err.println("Ошибка импорта вопросов в SQLite: " + e.getMessage());
+        }
     }
 }
