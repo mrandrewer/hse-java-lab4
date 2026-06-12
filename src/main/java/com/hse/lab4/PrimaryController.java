@@ -350,6 +350,22 @@ public class PrimaryController implements Initializable {
     }
 
     /**
+     * Возвращает текст ответа с префиксом буквы.
+     * 
+     * @param answerIndex индекс ответа
+     * @return текст ответа
+     */
+    private String getAnswerLabel(int answerIndex) {
+        var currentQuestion = game == null ? null : game.getCurrentQuestion();
+        if (currentQuestion == null || answerIndex < 0 || answerIndex >= currentQuestion.getAnswers().length) {
+            return "";
+        }
+
+        char answerLetter = (char) ('A' + answerIndex);
+        return answerLetter + ". " + currentQuestion.getAnswers()[answerIndex];
+    }
+
+    /**
      * Обработка клика по подсказке 50/50
      */
     @FXML
@@ -424,14 +440,11 @@ public class PrimaryController implements Initializable {
             votes.put(wrongAnswers.get(1), total - topVote - secondVote - thirdVote);
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("A: ").append(
-                Objects.requireNonNullElse(votes.get(0), 0)).append("%\n");
-        builder.append("B: ").append(
-                Objects.requireNonNullElse(votes.get(1), 0)).append("%\n");
-        builder.append("C: ").append(
-                Objects.requireNonNullElse(votes.get(2), 0)).append("%\n");
-        builder.append("D: ").append(
-                Objects.requireNonNullElse(votes.get(3), 0)).append("%\n");
+        for (int i = 0; i < 4; i++) {
+            builder.append(getAnswerLabel(i))
+                    .append(Objects.requireNonNullElse(votes.get(i), 0))
+                    .append("%\n");
+        }
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Помощь зала");
@@ -440,6 +453,38 @@ public class PrimaryController implements Initializable {
         alert.showAndWait();
 
         helpViewersDisabled.set(true);
+    }
+
+    /**
+     * Обработка клика по подсказке Звонок другу.
+     */
+    @FXML
+    private void handleHelpFriendClick() {
+        if (game == null || game.getCurrentQuestion() == null) {
+            return;
+        }
+
+        int correctAnswer = game.getCurrentQuestion().getCorrectAnswer();
+        int suggestedAnswer = correctAnswer;
+
+        // Наш друг угадывает с вероятностью 75%
+        if (ThreadLocalRandom.current().nextDouble() >= 0.75d) {
+            List<Integer> wrongAnswers = new ArrayList<>();
+            for (int i = 0; i < 4; i++) {
+                if (i != correctAnswer) {
+                    wrongAnswers.add(i);
+                }
+            }
+            suggestedAnswer = wrongAnswers.get(ThreadLocalRandom.current().nextInt(wrongAnswers.size()));
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Звонок другу");
+        alert.setHeaderText("Друг думает, что правильный ответ:");
+        alert.setContentText(getAnswerLabel(suggestedAnswer));
+        alert.showAndWait();
+
+        helpFriendDisabled.set(true);
     }
 
     /**
