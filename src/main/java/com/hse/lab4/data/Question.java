@@ -1,31 +1,70 @@
 package com.hse.lab4.data;
 
+import java.util.Arrays;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 /**
  * Модель вопроса для викторины "Кто хочет стать миллионером".
  * Содержит текст вопроса, варианты ответов, правильный ответ и уровень
  * сложности.
  */
+@DatabaseTable(tableName = "questions")
 public class Question {
+    /**
+     * Идентификатор записи.
+     */
+    @DatabaseField(generatedId = true)
+    private int id;
 
     /**
      * Текст вопроса.
      */
+    @DatabaseField(canBeNull = false, index = true)
     private String text;
 
     /**
-     * Массив четырёх вариантов ответа.
+     * Первый вариант ответа.
      */
-    private String[] answers = new String[4];
+    @DatabaseField(canBeNull = false)
+    private String answer1;
+
+    /**
+     * Второй вариант ответа.
+     */
+    @DatabaseField(canBeNull = false)
+    private String answer2;
+
+    /**
+     * Третий вариант ответа.
+     */
+    @DatabaseField(canBeNull = false)
+    private String answer3;
+
+    /**
+     * Четвёртый вариант ответа.
+     */
+    @DatabaseField(canBeNull = false)
+    private String answer4;
 
     /**
      * Правильный ответ на вопрос.
      */
+    @DatabaseField(canBeNull = false)
     private int correctAnswer;
 
     /**
      * Уровень сложности вопроса (0-15).
      */
+    @DatabaseField(canBeNull = false, index = true)
     private int level;
+
+    /**
+     * Пустой конструктор для ORMLite.
+     */
+    public Question() {
+    }
 
     /**
      * Конструктор для инициализации вопроса из отдельных полей.
@@ -37,11 +76,7 @@ public class Question {
      */
     public Question(String text, String[] answers, int correctAnswer, int level) {
         this.text = text;
-        if (answers != null && answers.length == 4) {
-            for (int i = 0; i < 4; i++) {
-                this.answers[i] = answers[i];
-            }
-        }
+        this.setAnswers(answers);
         this.correctAnswer = correctAnswer;
         this.level = level;
     }
@@ -58,9 +93,7 @@ public class Question {
      */
     public Question(String[] s) {
         this.text = s[0];
-        for (int i = 0; i < 4; i++) {
-            this.answers[i] = s[i + 1];
-        }
+        this.setAnswers(Arrays.copyOfRange(s, 1, 5));
         this.correctAnswer = Integer.parseInt(s[5]);
         this.level = Integer.parseInt(s[6]);
     }
@@ -75,12 +108,37 @@ public class Question {
     }
 
     /**
+     * Устанавливает текст вопроса
+     * 
+     * @param text текст вопроса
+     */
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    /**
      * Возвращает массив вариантов ответов.
      *
      * @return массив четырёх вариантов ответов
      */
     public String[] getAnswers() {
-        return answers;
+        return new String[] { answer1, answer2, answer3, answer4 };
+    }
+
+    /**
+     * Устанавливает массив вариантов ответов
+     * 
+     * @param answers массив вариантов ответов
+     */
+    public void setAnswers(String[] answers) {
+        if (answers != null && answers.length == 4) {
+            this.answer1 = answers[0];
+            this.answer2 = answers[1];
+            this.answer3 = answers[2];
+            this.answer4 = answers[3];
+        } else {
+            throw new IllegalArgumentException("There must be exactly 4 answers");
+        }
     }
 
     /**
@@ -93,11 +151,29 @@ public class Question {
     }
 
     /**
+     * Устанаваливает индекс правильного ответа.
+     *
+     * @param correctAnswer индекс правильного ответа (0-3)
+     */
+    public void setCorrectAnswer(int correctAnswer) {
+        this.correctAnswer = correctAnswer;
+    }
+
+    /**
      * Возвращает уровень сложности вопроса.
      *
      * @return уровень сложности (0-15)
      */
     public int getLevel() {
         return level;
+    }
+
+    /**
+     * Устанаваливает уровень сложности вопроса.
+     *
+     * @param level уровень сложности (0-15)
+     */
+    public void setLevel(int level) {
+        this.level = level;
     }
 }
