@@ -24,8 +24,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextInputDialog;
 
 import com.hse.lab4.data.DBQuestionRepository;
+import com.hse.lab4.data.DBRecordRepository;
 import com.hse.lab4.data.IQuestionProvider;
 import com.hse.lab4.data.TxtQuestionRepository;
 import com.hse.lab4.engine.Game;
@@ -288,6 +290,24 @@ public class PrimaryController implements Initializable {
     }
 
     /**
+     * Создание репозитория результатов игры.
+     * 
+     * @return инициализированный репозиторий результатов
+     */
+    private DBRecordRepository createRecordRepository() {
+        try {
+            return new DBRecordRepository();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка загрузки");
+            alert.setHeaderText("Не удалось инициализировать таблицу результатов.");
+            alert.showAndWait();
+        }
+        return null;
+    }
+
+    /**
      * Инициализирует игру
      */
     private void initGame(IQuestionProvider questionProvider) {
@@ -485,6 +505,49 @@ public class PrimaryController implements Initializable {
         alert.showAndWait();
 
         helpFriendDisabled.set(true);
+    }
+
+    /**
+     * Обработка клика по подсказке Звонок другу.
+     */
+    @FXML
+    private void handleTakeMoneyClick() {
+        if (game == null || game.getCurrentLevel() == null) {
+            return;
+        }
+        var level = game.getCurrentLevel();
+        if (level.getLevelNumber() < 2) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Денег нет");
+            alert.setHeaderText("Для того чтобы забрать деньги нужно ответить хотя бы на один вопрос");
+            alert.showAndWait();
+        }
+        // Мы имем только деньги за предыдущий вопрос, так что нужно сделать минус 1
+        var realLevel = MoneyLevel.fromLevel(level.getLevelNumber() - 1);
+
+        var repository = createRecordRepository();
+        if (repository == null) {
+            return;
+        }
+
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Сохранение результата");
+        dialog.setHeaderText("Вы заработали " + realLevel.toString());
+        dialog.setContentText("Введите имя:");
+        dialog.getEditor().setText("");
+        var result = dialog.showAndWait();
+        if (result.isEmpty()) {
+            return;
+        }
+
+        String playerName = result.get().trim();
+        if (playerName.isEmpty()) {
+            playerName = "Без имени";
+        }
+
+        repository.saveRecord(playerName, realLevel.getAmount());
+        game.newGame();
+        resetGameUI();
     }
 
     /**
