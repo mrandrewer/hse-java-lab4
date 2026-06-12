@@ -14,13 +14,12 @@ import com.j256.ormlite.table.TableUtils;
  * Реализация поставщика вопросов на SQLite через ORMLite.
  */
 public class DBQuestionRepository implements IQuestionProvider {
-    private static final String DATABASE_URL = "jdbc:sqlite:questions.db";
 
     private final ConnectionSource connectionSource;
     private final Dao<Question, Integer> questionDao;
 
     public DBQuestionRepository() throws SQLException {
-        this.connectionSource = new JdbcConnectionSource(DATABASE_URL);
+        this.connectionSource = new JdbcConnectionSource(Constants.DATABASE_URL);
         TableUtils.createTableIfNotExists(connectionSource, Question.class);
         this.questionDao = DaoManager.createDao(connectionSource, Question.class);
     }
