@@ -411,6 +411,7 @@ public class PrimaryController implements Initializable {
             alert.setContentText("Не удалось выполнить импорт вопросов");
             alert.showAndWait();
             System.err.println("Ошибка импорта вопросов в SQLite: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

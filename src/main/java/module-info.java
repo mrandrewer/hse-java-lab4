@@ -6,7 +6,7 @@ module com.hse.lab4 {
     requires org.xerial.sqlitejdbc;
 
     opens com.hse.lab4 to javafx.fxml;
-    opens com.hse.lab4.data to ormlite.core;
+    opens com.hse.lab4.data to ormlite.core, ormlite.jdbc;
 
     exports com.hse.lab4;
 }
