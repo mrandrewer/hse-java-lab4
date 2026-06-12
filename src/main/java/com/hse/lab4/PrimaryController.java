@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -378,8 +379,17 @@ public class PrimaryController implements Initializable {
         }
 
         int correctAnswer = game.getCurrentQuestion().getCorrectAnswer();
-        List<Integer> wrongAnswers = new ArrayList<>(List.of(0, 1, 2, 3));
-        wrongAnswers.remove((Integer) correctAnswer);
+        List<Integer> wrongAnswers = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            if (i == correctAnswer) {
+                continue;
+            }
+            // Учтем, что некоторые опции могут быть отключены
+            if (disableAnswerMapper[i].get()) {
+                continue;
+            }
+            wrongAnswers.add(i);
+        }
 
         // Из неправильных выбираем одну произвольную
         var deceptiveWrongOption = wrongAnswers.get(ThreadLocalRandom.current().nextInt(wrongAnswers.size()));
@@ -388,9 +398,17 @@ public class PrimaryController implements Initializable {
         // Шанс правильного голосования 50/50
         boolean correctHasMostVotes = ThreadLocalRandom.current().nextBoolean();
         int total = 100;
-        int topVote = ThreadLocalRandom.current().nextInt(33, 55);
-        int secondVote = ThreadLocalRandom.current().nextInt(20, topVote);
-        int thirdVote = ThreadLocalRandom.current().nextInt(10, total - topVote - secondVote);
+        int topVote, secondVote, thirdVote;
+        if (!wrongAnswers.isEmpty()) {
+            topVote = ThreadLocalRandom.current().nextInt(33, 55);
+            secondVote = ThreadLocalRandom.current().nextInt(20, topVote);
+            thirdVote = ThreadLocalRandom.current().nextInt(10, total - topVote - secondVote);
+
+        } else {
+            topVote = ThreadLocalRandom.current().nextInt(51, 99);
+            secondVote = total - topVote;
+            thirdVote = 0;
+        }
 
         var votes = new HashMap<Integer, Integer>();
         if (correctHasMostVotes) {
@@ -401,14 +419,19 @@ public class PrimaryController implements Initializable {
             votes.put(correctAnswer, secondVote);
         }
         // Остальные заполняем чтобы добить 100%
-        votes.put(wrongAnswers.get(0), thirdVote);
-        votes.put(wrongAnswers.get(1), total - topVote - secondVote - thirdVote);
-
+        if (!wrongAnswers.isEmpty()) {
+            votes.put(wrongAnswers.get(0), thirdVote);
+            votes.put(wrongAnswers.get(1), total - topVote - secondVote - thirdVote);
+        }
         StringBuilder builder = new StringBuilder();
-        builder.append("A: ").append(votes.get(0)).append("%\n");
-        builder.append("B: ").append(votes.get(1)).append("%\n");
-        builder.append("C: ").append(votes.get(2)).append("%\n");
-        builder.append("D: ").append(votes.get(3)).append("%\n");
+        builder.append("A: ").append(
+                Objects.requireNonNullElse(votes.get(0), 0)).append("%\n");
+        builder.append("B: ").append(
+                Objects.requireNonNullElse(votes.get(1), 0)).append("%\n");
+        builder.append("C: ").append(
+                Objects.requireNonNullElse(votes.get(2), 0)).append("%\n");
+        builder.append("D: ").append(
+                Objects.requireNonNullElse(votes.get(3), 0)).append("%\n");
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Помощь зала");
