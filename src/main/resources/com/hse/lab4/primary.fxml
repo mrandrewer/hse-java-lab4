@@ -108,10 +108,10 @@
    <top>
       <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <buttons>
-            <Button mnemonicParsing="false" text="Вопросы из файла" />
-            <Button mnemonicParsing="false" text="Вопросы из БД" />
-            <Button fx:id="btnImport" mnemonicParsing="false" text="Заполнить БД" />
-            <Button mnemonicParsing="false" text="Таблица рекордов" />
+            <Button fx:id="btnUseTxt" onAction="#handleUseTxtClick" text="Вопросы из файла" />
+            <Button fx:id="btnUseDb" onAction="#handleUseDBClick" text="Вопросы из БД" />
+            <Button fx:id="btnImport" onAction="#handleImportClick" text="Заполнить БД" />
+            <Button fx:id="btnRecrods" onAction="#handleRecordsClick" text="Таблица рекордов" />
          </buttons>
          <padding>
             <Insets right="10.0" top="10.0" />

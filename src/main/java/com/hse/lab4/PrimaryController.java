@@ -598,4 +598,9 @@ public class PrimaryController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void handleRecordsClick() throws IOException {
+        App.setRoot("records");
+    }
 }

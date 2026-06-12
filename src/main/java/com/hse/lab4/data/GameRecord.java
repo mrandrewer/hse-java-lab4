@@ -1,6 +1,7 @@
 package com.hse.lab4.data;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -58,5 +59,15 @@ public class GameRecord {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDate = getPlayedAt().format(formatter);
+        return String.format("%,d | %s | %s",
+                amount,
+                formattedDate,
+                playerName);
     }
 }
