@@ -1,17 +1,25 @@
 package com.hse.lab4;
 
 import java.io.IOException;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
-import com.hse.lab4.MoneyLevel;
-import javafx.scene.control.ListView;
-import javafx.collections.FXCollections;
-
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.layout.StackPane;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.scene.control.ListView;
+import com.hse.lab4.data.TxtQuestionRepository;
+import com.hse.lab4.engine.Game;
+import com.hse.lab4.engine.MoneyLevel;
+
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  * Контроллер главного экрана игры "Кто хочет стать миллионером".
@@ -23,11 +31,20 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private StackPane imagePane;
-
     @FXML
     private ImageView imgLogo;
     @FXML
     private ListView<MoneyLevel> lvMoney;
+    @FXML
+    private Label lblQuestion;
+    @FXML
+    private Button btnAnswer1;
+    @FXML
+    private Button btnAnswer2;
+    @FXML
+    private Button btnAnswer3;
+    @FXML
+    private Button btnAnswer4;
 
     /**
      * Переключается на вторичный экран.
@@ -37,6 +54,35 @@ public class PrimaryController implements Initializable {
     @FXML
     private void switchToSecondary() throws IOException {
         App.setRoot("secondary");
+    }
+
+    private Game game;
+
+    private StringProperty question = new SimpleStringProperty("Текст вопроса?");
+    private StringProperty answer1 = new SimpleStringProperty("Ответ 1");
+    private StringProperty answer2 = new SimpleStringProperty("Ответ 2");
+    private StringProperty answer3 = new SimpleStringProperty("Ответ 3");
+    private StringProperty answer4 = new SimpleStringProperty("Ответ 4");
+
+    private void initGame() {
+        var repository = new TxtQuestionRepository();
+        repository.load("Вопросы.txt");
+        this.game = new Game(repository);
+        this.game.newGame();
+        setLevelUI();
+    }
+
+    private void setLevelUI() {
+        var q = game.getCurrentQuestion();
+        if (q != null) {
+            question.set(q.getText());
+            answer1.set(q.getAnswers()[0]);
+            answer2.set(q.getAnswers()[1]);
+            answer3.set(q.getAnswers()[2]);
+            answer4.set(q.getAnswers()[3]);
+        }
+        var level = game.getCurrentLevel();
+        selectMoney(level);
     }
 
     /**
@@ -61,8 +107,20 @@ public class PrimaryController implements Initializable {
                     }
                 }
             });
-            this.selectMoney(MoneyLevel.LEVEL01);
         }
+    }
+
+    /**
+     * Инициализирует вопрос и варианты ответов на экране.
+     * Устанавливает привязки между свойствами вопроса/ответов и текстом
+     * соответствующих элементов управления.
+     */
+    private void initQuestion() {
+        lblQuestion.textProperty().bind(question);
+        btnAnswer1.textProperty().bind(answer1);
+        btnAnswer2.textProperty().bind(answer2);
+        btnAnswer3.textProperty().bind(answer3);
+        btnAnswer4.textProperty().bind(answer4);
     }
 
     /**
@@ -77,6 +135,8 @@ public class PrimaryController implements Initializable {
             if (imgLogo != null && imagePane != null) {
                 imgLogo.fitWidthProperty().bind(imagePane.widthProperty());
                 this.initLevel();
+                this.initQuestion();
+                this.initGame();
             }
         });
     }

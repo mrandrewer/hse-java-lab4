@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -47,6 +49,10 @@ public class TxtQuestionRepository implements IQuestionProvider {
      * Загружает вопросы из текстового файла.
      */
     public void load(String filePath) {
+        Path currentFolder = Paths.get("").toAbsolutePath();
+        Path fullPath = Paths.get(filePath).toAbsolutePath();
+        System.out.println("Текущая папка: " + currentFolder);
+        System.out.println("Полный путь к файлу: " + fullPath);
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(
                         new FileInputStream(filePath)))) {
