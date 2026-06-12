@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ThreadLocalRandom;
@@ -26,6 +25,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 
+import com.hse.lab4.data.AIQuestionProvider;
 import com.hse.lab4.data.DBQuestionRepository;
 import com.hse.lab4.data.DBRecordRepository;
 import com.hse.lab4.data.IQuestionProvider;
@@ -290,6 +290,26 @@ public class PrimaryController implements Initializable {
     }
 
     /**
+     * Создание поставщика вопросов из ИИ
+     * 
+     * @return инициализированный поставщик вопросов
+     */
+    private AIQuestionProvider createAIProvider() {
+        var key = System.getenv("MILLIONAIRE_API_KEY");
+        if (key == null || key.isBlank()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка подключения");
+            alert.setHeaderText("Для использования ИИ установите API ключ deepseek в переменной MILLIONAIRE_API_KEY.");
+            alert.showAndWait();
+            return null;
+        }
+        return new AIQuestionProvider(
+                "https://api.deepseek.com/v1",
+                key,
+                "deepseek-chat");
+    }
+
+    /**
      * Создание репозитория результатов игры.
      * 
      * @return инициализированный репозиторий результатов
@@ -319,7 +339,7 @@ public class PrimaryController implements Initializable {
     }
 
     /**
-     * Инициализирует игру
+     * Инициализирует игру из БД
      */
     private void initDBGame() {
         var repository = createDBRepository();
@@ -329,7 +349,7 @@ public class PrimaryController implements Initializable {
     }
 
     /**
-     * Инициализирует игру
+     * Инициализирует игру из файла
      */
     private void initTxtGame() {
         var repository = createTxtRepository();
@@ -337,6 +357,16 @@ public class PrimaryController implements Initializable {
             initDBGame();
         }
         initGame(repository);
+    }
+
+    /**
+     * Инициализирует игру с ИИ
+     */
+    private void initAIGame() {
+        var repository = createAIProvider();
+        if (repository != null) {
+            initGame(repository);
+        }
     }
 
     /**
@@ -564,6 +594,14 @@ public class PrimaryController implements Initializable {
     @FXML
     private void handleUseDBClick() {
         initDBGame();
+    }
+
+    /**
+     * Загружает вопросы из ИИ и инициализирует игру
+     */
+    @FXML
+    private void handleUseAIClick() {
+        initAIGame();
     }
 
     /**

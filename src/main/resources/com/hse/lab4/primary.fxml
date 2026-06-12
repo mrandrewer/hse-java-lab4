@@ -110,6 +110,7 @@
          <buttons>
             <Button fx:id="btnUseTxt" onAction="#handleUseTxtClick" text="Вопросы из файла" />
             <Button fx:id="btnUseDb" onAction="#handleUseDBClick" text="Вопросы из БД" />
+            <Button fx:id="btnUseAI" onAction="#handleUseAIClick" text="Вопросы от ИИ" />
             <Button fx:id="btnImport" onAction="#handleImportClick" text="Заполнить БД" />
             <Button fx:id="btnRecrods" onAction="#handleRecordsClick" text="Таблица рекордов" />
          </buttons>
