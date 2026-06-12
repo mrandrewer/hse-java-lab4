@@ -2,7 +2,10 @@ package com.hse.lab4;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -20,6 +23,8 @@ import com.hse.lab4.engine.Game;
 import com.hse.lab4.engine.MoneyLevel;
 
 import javafx.beans.property.StringProperty;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
@@ -46,6 +51,12 @@ public class PrimaryController implements Initializable {
     private Button btnAnswer3;
     @FXML
     private Button btnAnswer4;
+    @FXML
+    private Button btnHelpFiftyFifty;
+    @FXML
+    private Button btnHelpFriend;
+    @FXML
+    private Button btnHelpViewer;
 
     /**
      * Переключается на вторичный экран.
@@ -64,34 +75,40 @@ public class PrimaryController implements Initializable {
     private StringProperty answer2 = new SimpleStringProperty("Ответ 2");
     private StringProperty answer3 = new SimpleStringProperty("Ответ 3");
     private StringProperty answer4 = new SimpleStringProperty("Ответ 4");
+    private BooleanProperty answer1Disabled = new SimpleBooleanProperty(false);
+    private BooleanProperty answer2Disabled = new SimpleBooleanProperty(false);
+    private BooleanProperty answer3Disabled = new SimpleBooleanProperty(false);
+    private BooleanProperty answer4Disabled = new SimpleBooleanProperty(false);
+    private BooleanProperty help50Disabled = new SimpleBooleanProperty(false);
+    private BooleanProperty helpFriendDisabled = new SimpleBooleanProperty(false);
+    private BooleanProperty helpViewersDisabled = new SimpleBooleanProperty(false);
 
-    private void initGame() {
-        var repository = new TxtQuestionRepository();
-        repository.load("Вопросы.txt");
-        this.game = new Game(repository);
-        this.game.newGame();
-        setLevelUI();
-    }
+    // Сопоставление номера ответа и свойства для его отключения
+    private BooleanProperty[] disableAnswerMapper = {
+            answer1Disabled,
+            answer2Disabled,
+            answer3Disabled,
+            answer4Disabled
+    };
 
-    private void setLevelUI() {
-        var q = game.getCurrentQuestion();
-        if (q != null) {
-            question.set(q.getText());
-            answer1.set(q.getAnswers()[0]);
-            answer2.set(q.getAnswers()[1]);
-            answer3.set(q.getAnswers()[2]);
-            answer4.set(q.getAnswers()[3]);
-        }
-        var level = game.getCurrentLevel();
-        selectMoney(level);
+    /**
+     * Инициализирует контроллер при загрузке сцены.
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        Platform.runLater(() -> {
+            if (imgLogo != null && imagePane != null) {
+                imgLogo.fitWidthProperty().bind(imagePane.widthProperty());
+                this.initLevel();
+                this.initHelp();
+                this.initQuestion();
+                this.initGame();
+            }
+        });
     }
 
     /**
-     * Инициализирует таблицу вознаграждений.
-     * 
-     * Заполняет список уровней в убывающем порядке (от максимальной суммы к
-     * минимальной).
-     * Устанавливает кастомный рендерер ячеек для правого выравнивания текста.
+     * Инициализирует таблицу вознаграждений
      */
     private void initLevel() {
         if (lvMoney != null) {
@@ -112,34 +129,68 @@ public class PrimaryController implements Initializable {
     }
 
     /**
+     * Инициализирует кнопки подсказок
+     */
+    private void initHelp() {
+        btnHelpFiftyFifty.disableProperty().bind(help50Disabled);
+        btnHelpFriend.disableProperty().bind(helpFriendDisabled);
+        btnHelpViewer.disableProperty().bind(helpViewersDisabled);
+    }
+
+    /**
      * Инициализирует вопрос и варианты ответов на экране.
-     * Устанавливает привязки между свойствами вопроса/ответов и текстом
-     * соответствующих элементов управления.
      */
     private void initQuestion() {
         lblQuestion.textProperty().bind(question);
         btnAnswer1.textProperty().bind(answer1);
+        btnAnswer1.disableProperty().bind(answer1Disabled);
         btnAnswer2.textProperty().bind(answer2);
+        btnAnswer2.disableProperty().bind(answer2Disabled);
         btnAnswer3.textProperty().bind(answer3);
+        btnAnswer3.disableProperty().bind(answer3Disabled);
         btnAnswer4.textProperty().bind(answer4);
+        btnAnswer4.disableProperty().bind(answer4Disabled);
     }
 
     /**
-     * Инициализирует контроллер при загрузке сцены.
-     * 
-     * Привязывает размер изображения к размеру контейнера и инициализирует таблицу
-     * вознаграждений.
+     * Инициализирует игру
      */
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        Platform.runLater(() -> {
-            if (imgLogo != null && imagePane != null) {
-                imgLogo.fitWidthProperty().bind(imagePane.widthProperty());
-                this.initLevel();
-                this.initQuestion();
-                this.initGame();
-            }
-        });
+    private void initGame() {
+        var repository = new TxtQuestionRepository();
+        repository.load("Вопросы.txt");
+        this.game = new Game(repository);
+        this.game.newGame();
+        resetGame();
+    }
+
+    /**
+     * Сбрасывает игру на начало
+     */
+    private void resetGame() {
+        help50Disabled.set(false);
+        helpFriendDisabled.set(false);
+        helpViewersDisabled.set(false);
+        setLevelUI();
+    }
+
+    /**
+     * Обновляет данные уровня
+     */
+    private void setLevelUI() {
+        var q = game.getCurrentQuestion();
+        if (q != null) {
+            question.set(q.getText());
+            answer1.set(q.getAnswers()[0]);
+            answer2.set(q.getAnswers()[1]);
+            answer3.set(q.getAnswers()[2]);
+            answer4.set(q.getAnswers()[3]);
+            answer1Disabled.set(false);
+            answer2Disabled.set(false);
+            answer3Disabled.set(false);
+            answer4Disabled.set(false);
+        }
+        var level = game.getCurrentLevel();
+        selectMoney(level);
     }
 
     /**
@@ -147,7 +198,7 @@ public class PrimaryController implements Initializable {
      * 
      * @param level уровень вознаграждения для выбора
      */
-    public void selectMoney(MoneyLevel level) {
+    private void selectMoney(MoneyLevel level) {
         if (lvMoney == null || level == null)
             return;
         Platform.runLater(() -> {
@@ -160,6 +211,24 @@ public class PrimaryController implements Initializable {
     }
 
     /**
+     * Получает номер ответа по кнопке ответа
+     * 
+     * @param button Кнопка ответа
+     * @return номер ответа
+     */
+    private int getButtonAnswer(Button button) {
+        if (button == null) {
+            return -1;
+        }
+        Object userData = button.getUserData();
+        try {
+            return Integer.parseInt(String.valueOf(userData));
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    /**
      * Обработка клика по кнопке ответа
      */
     @FXML
@@ -168,21 +237,16 @@ public class PrimaryController implements Initializable {
             return;
         }
 
-        Object userData = button.getUserData();
-        int answerIndex;
-        try {
-            answerIndex = Integer.parseInt(String.valueOf(userData));
-        } catch (NumberFormatException e) {
-            return;
-        }
-
-        if (game.checkAnswer(answerIndex)) {
-            if (!game.nextLevel()) {
+        if (game.checkAnswer(getButtonAnswer(button))) {
+            if (game.nextLevel()) {
+                setLevelUI();
+            } else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Win");
                 alert.setHeaderText("Вы выиграли, забирайте свои 3 миллиона рублей и начинайте сначала!");
                 alert.showAndWait();
                 game.newGame();
+                resetGame();
             }
         } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -190,7 +254,27 @@ public class PrimaryController implements Initializable {
             alert.setHeaderText("Вы - самое слабое звено, начинайте сначала!");
             alert.showAndWait();
             game.newGame();
+            resetGame();
         }
-        setLevelUI();
+    }
+
+    /**
+     * Обработка клика по подсказке 50/50
+     */
+    @FXML
+    private void handleFiftyFiftyClick(ActionEvent event) {
+        if (game == null || game.getCurrentQuestion() == null) {
+            return;
+        }
+
+        int correctAnswer = game.getCurrentQuestion().getCorrectAnswer();
+        List<Integer> wrongAnswers = new ArrayList<>(List.of(0, 1, 2, 3));
+        wrongAnswers.remove((Integer) correctAnswer);
+        // Из неправильных оставляем доступной одну произвольную
+        wrongAnswers.remove(ThreadLocalRandom.current().nextInt(wrongAnswers.size()));
+        for (int answer : wrongAnswers) {
+            disableAnswerMapper[answer].set(true);
+        }
+        help50Disabled.set(true);
     }
 }
