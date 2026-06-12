@@ -77,8 +77,9 @@
          <children>
             <Button fx:id="btnHelpFiftyFifty" onAction="#handleFiftyFiftyClick" prefWidth="120.0"
                text="50/50" />
-            <Button fx:id="btnHelpFriend" prefWidth="120.0" text="Помощь зала" />
-            <Button fx:id="btnHelpViewer" prefWidth="120.0" text="Звонок другу" />
+            <Button fx:id="btnHelpFriend" prefWidth="120.0" text="Звонок другу" />
+            <Button fx:id="btnHelpViewer" onAction="#handleHelpViewerClick" prefWidth="120.0"
+               text="Помощь зала" />
             <Region prefHeight="20.0" />
             <Button prefWidth="120.0" text="Забрать деньги" />
          </children>

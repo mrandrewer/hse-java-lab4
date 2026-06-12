@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -175,10 +177,10 @@ public class PrimaryController implements Initializable {
         var q = game.getCurrentQuestion();
         if (q != null) {
             question.set(q.getText());
-            answer1.set(q.getAnswers()[0]);
-            answer2.set(q.getAnswers()[1]);
-            answer3.set(q.getAnswers()[2]);
-            answer4.set(q.getAnswers()[3]);
+            answer1.set("A. " + q.getAnswers()[0]);
+            answer2.set("B. " + q.getAnswers()[1]);
+            answer3.set("C. " + q.getAnswers()[2]);
+            answer4.set("D. " + q.getAnswers()[3]);
             answer1Disabled.set(false);
             answer2Disabled.set(false);
             answer3Disabled.set(false);
@@ -364,6 +366,57 @@ public class PrimaryController implements Initializable {
             disableAnswerMapper[answer].set(true);
         }
         help50Disabled.set(true);
+    }
+
+    /**
+     * Обработка клика по подсказке Помощь зала
+     */
+    @FXML
+    private void handleHelpViewerClick() {
+        if (game == null || game.getCurrentQuestion() == null) {
+            return;
+        }
+
+        int correctAnswer = game.getCurrentQuestion().getCorrectAnswer();
+        List<Integer> wrongAnswers = new ArrayList<>(List.of(0, 1, 2, 3));
+        wrongAnswers.remove((Integer) correctAnswer);
+
+        // Из неправильных выбираем одну произвольную
+        var deceptiveWrongOption = wrongAnswers.get(ThreadLocalRandom.current().nextInt(wrongAnswers.size()));
+        wrongAnswers.remove((Integer) deceptiveWrongOption);
+
+        // Шанс правильного голосования 50/50
+        boolean correctHasMostVotes = ThreadLocalRandom.current().nextBoolean();
+        int total = 100;
+        int topVote = ThreadLocalRandom.current().nextInt(33, 55);
+        int secondVote = ThreadLocalRandom.current().nextInt(20, topVote);
+        int thirdVote = ThreadLocalRandom.current().nextInt(10, total - topVote - secondVote);
+
+        var votes = new HashMap<Integer, Integer>();
+        if (correctHasMostVotes) {
+            votes.put(correctAnswer, topVote);
+            votes.put(deceptiveWrongOption, secondVote);
+        } else {
+            votes.put(deceptiveWrongOption, topVote);
+            votes.put(correctAnswer, secondVote);
+        }
+        // Остальные заполняем чтобы добить 100%
+        votes.put(wrongAnswers.get(0), thirdVote);
+        votes.put(wrongAnswers.get(1), total - topVote - secondVote - thirdVote);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("A: ").append(votes.get(0)).append("%\n");
+        builder.append("B: ").append(votes.get(1)).append("%\n");
+        builder.append("C: ").append(votes.get(2)).append("%\n");
+        builder.append("D: ").append(votes.get(3)).append("%\n");
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Помощь зала");
+        alert.setHeaderText("Результаты голосования зрителей:");
+        alert.setContentText(builder.toString());
+        alert.showAndWait();
+
+        helpViewersDisabled.set(true);
     }
 
     /**
