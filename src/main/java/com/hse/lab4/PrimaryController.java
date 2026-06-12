@@ -6,13 +6,14 @@ import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.StackPane;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.Image;
 import javafx.scene.control.ListView;
 import com.hse.lab4.data.TxtQuestionRepository;
 import com.hse.lab4.engine.Game;
@@ -156,5 +157,40 @@ public class PrimaryController implements Initializable {
                 lvMoney.scrollTo(idx);
             }
         });
+    }
+
+    /**
+     * Обработка клика по кнопке ответа
+     */
+    @FXML
+    private void handleAnswerClick(ActionEvent event) {
+        if (game == null || event == null || !(event.getSource() instanceof Button button)) {
+            return;
+        }
+
+        Object userData = button.getUserData();
+        int answerIndex;
+        try {
+            answerIndex = Integer.parseInt(String.valueOf(userData));
+        } catch (NumberFormatException e) {
+            return;
+        }
+
+        if (game.checkAnswer(answerIndex)) {
+            if (!game.nextLevel()) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Win");
+                alert.setHeaderText("Вы выиграли, забирайте свои 3 миллиона рублей и начинайте сначала!");
+                alert.showAndWait();
+                game.newGame();
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Game Over");
+            alert.setHeaderText("Вы - самое слабое звено, начинайте сначала!");
+            alert.showAndWait();
+            game.newGame();
+        }
+        setLevelUI();
     }
 }
