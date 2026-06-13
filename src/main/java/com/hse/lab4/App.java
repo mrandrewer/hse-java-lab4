@@ -22,6 +22,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("primary"), 900, 650);
+        applyTheme(scene);
         stage.getIcons().add(loadAppIcon());
         stage.setScene(scene);
         stage.setMinWidth(800);
@@ -37,7 +38,9 @@ public class App extends Application {
         }
         dialog.getIcons().add(loadAppIcon());
         dialog.setTitle(title);
-        dialog.setScene(new Scene(loadFXML(fxml), 600, 500));
+        Scene modalScene = new Scene(loadFXML(fxml), 600, 500);
+        applyTheme(modalScene);
+        dialog.setScene(modalScene);
         dialog.show();
         dialog.toFront();
     }
@@ -47,6 +50,13 @@ public class App extends Application {
             return new Image(stream);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load app icon", e);
+        }
+    }
+
+    private static void applyTheme(Scene scene) {
+        var stylesheet = App.class.getResource("millionaire-theme.css");
+        if (scene != null && stylesheet != null) {
+            scene.getStylesheets().add(stylesheet.toExternalForm());
         }
     }
 

@@ -6,11 +6,15 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" maxHeight="800.0" maxWidth="600.0" spacing="20.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hse.lab4.RecordsController">
+<VBox alignment="CENTER" maxHeight="800.0" maxWidth="600.0" spacing="20.0"
+    styleClass="dialog-root panel" xmlns="http://javafx.com/javafx/26"
+    xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hse.lab4.RecordsController">
     <children>
-        <Label text="Таблица рекордов" VBox.vgrow="NEVER" />
-        <ListView fx:id="lvRecords" mouseTransparent="true" VBox.vgrow="ALWAYS" />
-        <Button fx:id="btnClose" onAction="#close" text="ОК" VBox.vgrow="NEVER" />
+        <Label styleClass="screen-title" text="Таблица рекордов" VBox.vgrow="NEVER" />
+        <ListView fx:id="lvRecords" mouseTransparent="true" styleClass="records-list"
+            VBox.vgrow="ALWAYS" />
+        <Button fx:id="btnClose" onAction="#close" styleClass="close-button" text="ОК"
+            VBox.vgrow="NEVER" />
     </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

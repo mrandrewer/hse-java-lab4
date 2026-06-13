@@ -1,0 +1,162 @@
+.root {
+    -fx-font-family: "Georgia";
+    -fx-base: #0e2240;
+    -fx-background: linear-gradient(to bottom, #04111f 0%, #07182d 45%, #02070f 100%);
+    -fx-text-fill: #f6f0d4;
+}
+
+.game-root,
+.dialog-root {
+    -fx-padding: 0;
+}
+
+.top-toolbar {
+    -fx-background-color: linear-gradient(to right, rgba(4, 17, 31, 0.96), rgba(10, 35, 68, 0.94));
+    -fx-background-insets: 0;
+    -fx-padding: 10 12 12 12;
+    -fx-border-color: rgba(240, 204, 95, 0.55);
+    -fx-border-width: 0 0 1 0;
+}
+
+.splash-panel {
+    -fx-padding: 18 18 18 18;
+}
+
+.question-panel {
+    -fx-background-color: linear-gradient(to top, rgba(5, 16, 29, 0.94), rgba(10, 30, 57, 0.82));
+    -fx-background-radius: 22 22 0 0;
+    -fx-padding: 18 18 20 18;
+    -fx-border-color: rgba(240, 204, 95, 0.35);
+    -fx-border-radius: 22 22 0 0;
+    -fx-border-width: 1 1 0 1;
+}
+
+.lifeline-panel,
+.money-panel {
+    -fx-background-color: rgba(4, 13, 24, 0.88);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(240, 204, 95, 0.32);
+    -fx-border-width: 1;
+}
+
+.question-text {
+    -fx-text-fill: #fff6d6;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.85), 8, 0.2, 0, 2);
+}
+
+.screen-title {
+    -fx-text-fill: #f4d56a;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 8, 0.2, 0, 2);
+}
+
+.money-list {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+}
+
+.money-list .list-cell {
+    -fx-text-fill: #e8dba6;
+    -fx-font-size: 14px;
+    -fx-padding: 6 10 6 10;
+    -fx-background-color: transparent;
+}
+
+.money-list .list-cell:filled:hover {
+    -fx-background-color: rgba(255, 225, 123, 0.12);
+}
+
+.money-list .list-cell:filled:selected {
+    -fx-background-color: linear-gradient(to right, rgba(219, 170, 54, 0.95), rgba(252, 221, 121, 0.85));
+    -fx-text-fill: #07111d;
+    -fx-font-weight: bold;
+}
+
+.answer-grid {
+    -fx-padding: 4 18 0 18;
+}
+
+.answer-button {
+    -fx-background-color: linear-gradient(to bottom, #123a73 0%, #0a2346 100%);
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: rgba(243, 211, 111, 0.45);
+    -fx-border-width: 1.2;
+    -fx-text-fill: #fff7da;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 10, 0.15, 0, 3);
+}
+
+.answer-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #18498f 0%, #0f2f5d 100%);
+    -fx-border-color: rgba(255, 229, 145, 0.72);
+}
+
+.answer-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #08172e 0%, #12325d 100%);
+}
+
+.help-button,
+.top-action-button,
+.take-money-button,
+.close-button {
+    -fx-background-color: linear-gradient(to bottom, #f6d76a 0%, #cf9f1d 100%);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 245, 200, 0.55);
+    -fx-border-width: 1;
+    -fx-text-fill: #1d1a08;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.help-button:hover,
+.top-action-button:hover,
+.take-money-button:hover,
+.close-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #ffe17c 0%, #e0b12a 100%);
+}
+
+.help-button:disabled,
+.top-action-button:disabled,
+.take-money-button:disabled {
+    -fx-opacity: 0.55;
+}
+
+.take-money-button {
+    -fx-background-color: linear-gradient(to bottom, #ffdf75 0%, #d19d16 100%);
+}
+
+.records-list {
+    -fx-background-color: rgba(5, 16, 29, 0.90);
+    -fx-control-inner-background: rgba(5, 16, 29, 0.90);
+    -fx-text-fill: #f8eec8;
+    -fx-border-color: rgba(240, 204, 95, 0.28);
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+}
+
+.records-list .list-cell {
+    -fx-text-fill: #f4ebc8;
+    -fx-background-color: transparent;
+    -fx-font-size: 13px;
+    -fx-padding: 8 10 8 10;
+}
+
+.records-list .list-cell:filled:selected {
+    -fx-background-color: linear-gradient(to right, rgba(219, 170, 54, 0.95), rgba(252, 221, 121, 0.85));
+    -fx-text-fill: #09111f;
+    -fx-font-weight: bold;
+}
+
+.records-list .list-cell:filled:hover {
+    -fx-background-color: rgba(255, 225, 123, 0.10);
+}
