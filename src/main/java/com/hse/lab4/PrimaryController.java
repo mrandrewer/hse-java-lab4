@@ -108,6 +108,7 @@ public class PrimaryController implements Initializable {
         Platform.runLater(() -> {
             if (imgLogo != null && imagePane != null) {
                 imgLogo.fitWidthProperty().bind(imagePane.widthProperty());
+                imgLogo.fitHeightProperty().bind(imagePane.heightProperty());
                 this.initLevelUI();
                 this.initHelpUI();
                 this.initQuestionUI();

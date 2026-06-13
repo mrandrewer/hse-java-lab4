@@ -10,6 +10,11 @@
     -fx-padding: 0;
 }
 
+.game-root {
+    -fx-background-color: rgba(2, 7, 15, 1.0);
+    -fx-background-insets: 0;
+}
+
 .top-toolbar {
     -fx-background-color: linear-gradient(to right, rgba(4, 17, 31, 0.96), rgba(10, 35, 68, 0.94));
     -fx-background-insets: 0;
@@ -31,7 +36,7 @@
     -fx-border-width: 1 1 0 1;
 }
 
-.lifeline-panel,
+.help-panel,
 .money-panel {
     -fx-background-color: rgba(4, 13, 24, 0.88);
     -fx-background-radius: 18;

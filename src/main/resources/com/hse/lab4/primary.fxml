@@ -63,8 +63,8 @@
       </VBox>
    </bottom>
    <right>
-      <VBox alignment="TOP_CENTER" maxHeight="400.0" maxWidth="140.0" minWidth="140.0"
-         prefWidth="140.0" styleClass="money-panel" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_CENTER" maxHeight="400.0" maxWidth="160.0" minWidth="160.0"
+         prefWidth="160.0" styleClass="money-panel" BorderPane.alignment="CENTER">
          <children>
             <ListView fx:id="lvMoney" editable="false" focusTraversable="false"
                mouseTransparent="true" styleClass="money-list" />
@@ -75,21 +75,21 @@
       </VBox>
    </right>
    <left>
-      <VBox alignment="CENTER" maxHeight="400.0" maxWidth="140.0" minWidth="140.0" prefWidth="140.0"
+      <VBox alignment="CENTER" maxHeight="400.0" maxWidth="160.0" minWidth="160.0" prefWidth="160.0"
          spacing="10.0" styleClass="help-panel" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="btnHelpFiftyFifty" onAction="#handleFiftyFiftyClick" prefWidth="120.0"
+            <Button fx:id="btnHelpFiftyFifty" onAction="#handleFiftyFiftyClick" prefWidth="140.0"
                styleClass="help-button" text="50/50" />
-            <Button fx:id="btnHelpFriend" onAction="#handleHelpFriendClick" prefWidth="120.0"
+            <Button fx:id="btnHelpFriend" onAction="#handleHelpFriendClick" prefWidth="140.0"
                styleClass="help-button" text="Звонок другу" />
-            <Button fx:id="btnHelpViewer" onAction="#handleHelpViewerClick" prefWidth="120.0"
+            <Button fx:id="btnHelpViewer" onAction="#handleHelpViewerClick" prefWidth="140.0"
                styleClass="help-button" text="Помощь зала" />
-            <Button fx:id="btnHelpMistake" onAction="#handleHelpMistakeClick" prefWidth="120.0"
+            <Button fx:id="btnHelpMistake" onAction="#handleHelpMistakeClick" prefWidth="140.0"
                styleClass="help-button" text="Одна ошибка" />
             <Button fx:id="btnHelpReplaceQuestion" onAction="#handleHelpReplaceQuestionClick"
-               prefWidth="120.0" styleClass="help-button" text="Замена вопроса" />
+               prefWidth="140.0" styleClass="help-button" text="Замена вопроса" />
             <Region prefHeight="20.0" />
-            <Button fx:id="btnTakeMoney" onAction="#handleTakeMoneyClick" prefWidth="120.0"
+            <Button fx:id="btnTakeMoney" onAction="#handleTakeMoneyClick" prefWidth="140.0"
                styleClass="take-money-button" text="Забрать деньги" />
          </children>
          <padding>
@@ -104,7 +104,7 @@
             <ImageView fx:id="imgLogo" fitWidth="300.0" pickOnBounds="true" preserveRatio="true"
                styleClass="brand-image" StackPane.alignment="CENTER">
                <image>
-                  <Image url="@splash.jpg" />
+                  <Image url="@splash.png" />
                </image>
             </ImageView>
          </children>
