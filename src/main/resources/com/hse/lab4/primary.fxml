@@ -81,6 +81,8 @@
                text="Звонок другу" />
             <Button fx:id="btnHelpViewer" onAction="#handleHelpViewerClick" prefWidth="120.0"
                text="Помощь зала" />
+            <Button fx:id="btnHelpMistake" onAction="#handleMistakeHelpClick" prefWidth="120.0"
+               text="Одна ошибка" />
             <Region prefHeight="20.0" />
             <Button fx:id="btnTakeMoney" onAction="#handleTakeMoneyClick" prefWidth="120.0"
                text="Забрать деньги" />

@@ -68,6 +68,8 @@ public class PrimaryController implements Initializable {
     private Button btnHelpFriend;
     @FXML
     private Button btnHelpViewer;
+    @FXML
+    private Button btnHelpMistake;
 
     private Game game;
 
@@ -83,6 +85,9 @@ public class PrimaryController implements Initializable {
     private BooleanProperty help50Disabled = new SimpleBooleanProperty(false);
     private BooleanProperty helpFriendDisabled = new SimpleBooleanProperty(false);
     private BooleanProperty helpViewersDisabled = new SimpleBooleanProperty(false);
+    private BooleanProperty helpMistakeDisabled = new SimpleBooleanProperty(false);
+
+    private Boolean allowMistake = false;
 
     // Сопоставление номера ответа и свойства для его отключения
     private BooleanProperty[] disableAnswerMapper = {
@@ -136,6 +141,7 @@ public class PrimaryController implements Initializable {
         btnHelpFiftyFifty.disableProperty().bind(help50Disabled);
         btnHelpFriend.disableProperty().bind(helpFriendDisabled);
         btnHelpViewer.disableProperty().bind(helpViewersDisabled);
+        btnHelpMistake.disableProperty().bind(helpMistakeDisabled);
     }
 
     /**
@@ -160,6 +166,7 @@ public class PrimaryController implements Initializable {
         help50Disabled.set(false);
         helpFriendDisabled.set(false);
         helpViewersDisabled.set(false);
+        helpMistakeDisabled.set(false);
         setLevelUI();
     }
 
@@ -367,9 +374,10 @@ public class PrimaryController implements Initializable {
         if (game == null || event == null || !(event.getSource() instanceof Button button)) {
             return;
         }
-
-        if (game.checkAnswer(getButtonAnswer(button))) {
+        var answer = getButtonAnswer(button);
+        if (game.checkAnswer(answer)) {
             if (game.nextLevel()) {
+                allowMistake = false;
                 setLevelUI();
             } else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -380,12 +388,25 @@ public class PrimaryController implements Initializable {
                 resetGameUI();
             }
         } else {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Game Over");
-            alert.setHeaderText("Вы - самое слабое звено, начинайте сначала!");
-            alert.showAndWait();
-            game.newGame();
-            resetGameUI();
+            if (allowMistake) {
+                // Сбрасываем флаг и отключаем кнопку с ошибкой
+                allowMistake = false;
+                disableAnswerMapper[answer].set(true);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Подстраховка");
+                alert.setHeaderText("Ответ неверный, у вас есть еще одна попытка на этот вопрос.");
+                alert.showAndWait();
+                return;
+            } else {
+                var correctAnswer = game.getCurrentQuestion().getCorrectAnswer();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Game Over");
+                alert.setHeaderText("Вы - самое слабое звено, начинайте сначала!");
+                alert.setContentText("Правильный ответ: " + getAnswerLabel(correctAnswer));
+                alert.showAndWait();
+                game.newGame();
+                resetGameUI();
+            }
         }
     }
 
@@ -525,6 +546,24 @@ public class PrimaryController implements Initializable {
         alert.showAndWait();
 
         helpFriendDisabled.set(true);
+    }
+
+    /**
+     * Обработка клика по подсказке "одна ошибка".
+     */
+    @FXML
+    private void handleMistakeHelpClick() {
+        if (game == null || game.getCurrentQuestion() == null) {
+            return;
+        }
+
+        helpMistakeDisabled.set(true);
+        allowMistake = true;
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Подстраховка");
+        alert.setHeaderText("Теперь одна неправильная попытка на этот вопрос не приведет к поражению.");
+        alert.showAndWait();
     }
 
     /**
