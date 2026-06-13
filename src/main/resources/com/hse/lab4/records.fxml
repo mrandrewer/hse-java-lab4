@@ -12,7 +12,7 @@
     <children>
         <Label text="Таблица рекордов" VBox.vgrow="NEVER" />
         <ListView fx:id="lvRecords" VBox.vgrow="ALWAYS" />
-        <Button fx:id="secondaryButton" onAction="#switchToPrimary" text="ОК" VBox.vgrow="NEVER" />
+        <Button fx:id="btnClose" onAction="#close" text="ОК" VBox.vgrow="NEVER" />
     </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

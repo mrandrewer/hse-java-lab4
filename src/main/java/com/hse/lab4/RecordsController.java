@@ -12,10 +12,12 @@ import com.hse.lab4.data.GameRecord;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
+import javafx.stage.Stage;
 
 public class RecordsController implements Initializable {
     @FXML
@@ -49,7 +51,10 @@ public class RecordsController implements Initializable {
     }
 
     @FXML
-    private void switchToPrimary() throws IOException {
-        App.setRoot("primary");
+    private void close(ActionEvent event) {
+        if (event != null && event.getSource() instanceof javafx.scene.Node node) {
+            Stage stage = (Stage) node.getScene().getWindow();
+            stage.close();
+        }
     }
 }

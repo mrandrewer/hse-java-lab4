@@ -17,6 +17,7 @@ module com.hse.lab4 {
     // OpenAI SDK (automatic module name)
     requires openai.java.client.okhttp;
     requires openai.java.core;
+    requires javafx.graphics;
 
     // Open packages for reflection
     opens com.hse.lab4 to javafx.fxml;

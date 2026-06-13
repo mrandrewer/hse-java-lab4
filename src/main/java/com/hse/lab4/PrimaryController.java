@@ -69,16 +69,6 @@ public class PrimaryController implements Initializable {
     @FXML
     private Button btnHelpViewer;
 
-    /**
-     * Переключается на вторичный экран.
-     * 
-     * @throws IOException если не удается загрузить FXML файл
-     */
-    @FXML
-    private void switchToSecondary() throws IOException {
-        App.setRoot("secondary");
-    }
-
     private Game game;
 
     private StringProperty question = new SimpleStringProperty("Текст вопроса?");
@@ -639,6 +629,6 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void handleRecordsClick() throws IOException {
-        App.setRoot("records");
+        App.showModal("records", "Таблица рекордов");
     }
 }
