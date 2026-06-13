@@ -1,8 +1,5 @@
 package com.hse.lab4.engine;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hse.lab4.data.IQuestionProvider;
 import com.hse.lab4.data.Question;
 
@@ -86,6 +83,14 @@ public class Game {
             return false;
         }
         return answerIndex >= 0 && answerIndex <= 3 && currentQuestion.getCorrectAnswer() == answerIndex;
+    }
+
+    /**
+     * Замена вопроса текущего уровня
+     */
+    public Question repalceQuestion() {
+        this.currentQuestion = questionProvider.getQuestion(currentLevel.getLevelNumber());
+        return this.currentQuestion;
     }
 
 }

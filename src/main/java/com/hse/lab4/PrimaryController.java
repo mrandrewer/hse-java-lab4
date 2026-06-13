@@ -70,6 +70,8 @@ public class PrimaryController implements Initializable {
     private Button btnHelpViewer;
     @FXML
     private Button btnHelpMistake;
+    @FXML
+    private Button btnHelpReplaceQuestion;
 
     private Game game;
 
@@ -86,6 +88,7 @@ public class PrimaryController implements Initializable {
     private BooleanProperty helpFriendDisabled = new SimpleBooleanProperty(false);
     private BooleanProperty helpViewersDisabled = new SimpleBooleanProperty(false);
     private BooleanProperty helpMistakeDisabled = new SimpleBooleanProperty(false);
+    private BooleanProperty helpReplaceQuestionDisabled = new SimpleBooleanProperty(false);
 
     private Boolean allowMistake = false;
 
@@ -142,6 +145,7 @@ public class PrimaryController implements Initializable {
         btnHelpFriend.disableProperty().bind(helpFriendDisabled);
         btnHelpViewer.disableProperty().bind(helpViewersDisabled);
         btnHelpMistake.disableProperty().bind(helpMistakeDisabled);
+        btnHelpReplaceQuestion.disableProperty().bind(helpReplaceQuestionDisabled);
     }
 
     /**
@@ -167,6 +171,7 @@ public class PrimaryController implements Initializable {
         helpFriendDisabled.set(false);
         helpViewersDisabled.set(false);
         helpMistakeDisabled.set(false);
+        helpReplaceQuestionDisabled.set(false);
         setLevelUI();
     }
 
@@ -552,7 +557,7 @@ public class PrimaryController implements Initializable {
      * Обработка клика по подсказке "одна ошибка".
      */
     @FXML
-    private void handleMistakeHelpClick() {
+    private void handleHelpMistakeClick() {
         if (game == null || game.getCurrentQuestion() == null) {
             return;
         }
@@ -564,6 +569,20 @@ public class PrimaryController implements Initializable {
         alert.setTitle("Подстраховка");
         alert.setHeaderText("Теперь одна неправильная попытка на этот вопрос не приведет к поражению.");
         alert.showAndWait();
+    }
+
+    /**
+     * Обработка клика по подсказке "замена вопроса".
+     */
+    @FXML
+    private void handleHelpReplaceQuestionClick() {
+        if (game == null || game.getCurrentQuestion() == null) {
+            return;
+        }
+
+        helpReplaceQuestionDisabled.set(true);
+        game.repalceQuestion();
+        setLevelUI();
     }
 
     /**
