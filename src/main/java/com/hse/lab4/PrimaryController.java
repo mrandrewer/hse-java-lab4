@@ -373,6 +373,44 @@ public class PrimaryController implements Initializable {
     }
 
     /**
+     * Сохраняет результат игрока для указанного уровня выигрыша.
+     *
+     * @param title Заголовок окна
+     * @param level уровень, который нужно записать в таблицу результатов
+     * @return true если запись успешно сохранена,
+     *         false если пользователь отменил ввод
+     */
+    private boolean savePlayerRecord(String title, MoneyLevel level) {
+        if (level == null) {
+            return false;
+        }
+
+        var repository = createRecordRepository();
+        if (repository == null) {
+            return false;
+        }
+
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Сохранение результата");
+        dialog.setHeaderText(title + "\nВы заработали " + level.toString());
+        dialog.setContentText("Введите имя:");
+        dialog.getEditor().setText("");
+
+        var result = dialog.showAndWait();
+        if (result.isEmpty()) {
+            return false;
+        }
+
+        String playerName = result.get().trim();
+        if (playerName.isEmpty()) {
+            playerName = "Без имени";
+        }
+
+        repository.saveRecord(playerName, level.getAmount());
+        return true;
+    }
+
+    /**
      * Обработка клика по кнопке ответа
      */
     @FXML
@@ -386,10 +424,9 @@ public class PrimaryController implements Initializable {
                 allowMistake = false;
                 setLevelUI();
             } else {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Win");
-                alert.setHeaderText("Вы выиграли, забирайте свои 3 миллиона рублей и начинайте сначала!");
-                alert.showAndWait();
+                if (!savePlayerRecord("Вы выиграли! ", game.getCurrentLevel())) {
+                    return;
+                }
                 game.newGame();
                 resetGameUI();
             }
@@ -603,28 +640,10 @@ public class PrimaryController implements Initializable {
         }
         // Мы имем только деньги за предыдущий вопрос, так что нужно сделать минус 1
         var realLevel = MoneyLevel.fromLevel(level.getLevelNumber() - 1);
-
-        var repository = createRecordRepository();
-        if (repository == null) {
+        if (!savePlayerRecord("Что же, ваше право. ", realLevel)) {
             return;
         }
 
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Сохранение результата");
-        dialog.setHeaderText("Вы заработали " + realLevel.toString());
-        dialog.setContentText("Введите имя:");
-        dialog.getEditor().setText("");
-        var result = dialog.showAndWait();
-        if (result.isEmpty()) {
-            return;
-        }
-
-        String playerName = result.get().trim();
-        if (playerName.isEmpty()) {
-            playerName = "Без имени";
-        }
-
-        repository.saveRecord(playerName, realLevel.getAmount());
         game.newGame();
         resetGameUI();
     }
