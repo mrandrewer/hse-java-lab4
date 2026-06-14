@@ -55,7 +55,7 @@ public class Question {
     private int correctAnswer;
 
     /**
-     * Уровень сложности вопроса (0-15).
+     * Уровень сложности вопроса
      */
     @DatabaseField(canBeNull = false, index = true)
     private int level;
